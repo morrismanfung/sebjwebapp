@@ -8,3 +8,5 @@ dependencies:
   - seaborn
   - dash=2.8.*
   - dash-bootstrap-components
+  - scipt
+  - plotly
