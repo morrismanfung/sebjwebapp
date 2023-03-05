@@ -14,7 +14,9 @@ Count frequencies are extracted from [QFIT CVCX Online Viewer](https://www.qfit.
 
 Base house edge is estimated with the chart in [Blackbet in Blackjack: Playing 21 as a Martial Art](https://www.amazon.com/Blackbelt-Blackjack-Playing-Martial-Art/dp/1580421431) Chapter 6.
 
-Variance is extracted from [Variance in Blackjack on The Wizard of Odds](https://wizardofodds.com/games/blackjack/variance/).
+Variance is approximated from Stanford Wong's [Professional Blackjack](https://www.amazon.ca/Professional-Blackjack-Stanford-Wong/dp/0935926216) Chapter 14.
+
+Formula for risk of ruin is adopted from Don Schlesinger's [Blackjack Attack: Playing the Pro's Way](https://www.amazon.ca/Blackjack-Attack-Playing-Pros-Way/dp/0910575207).
 
 ## Use Case Scenario
 
