@@ -124,27 +124,6 @@ freq_table = dash_table.DataTable(
         }]
 )
 
-'''stat_table = dbc.Card([
-    dbc.CardHeader('Theoretical Results'),
-    dbc.CardBody(
-        dash_table.DataTable(
-            id='stat_table',
-            columns=[
-                {'id': 'stat', 'name': ''},
-                {'id': 'value', 'name': ''}
-            ],
-            data=[
-                {'stat': 'EV', 'value': 0},
-                {'stat': 'RoR', 'value': 0},
-                {'stat': 'EV/hour', 'value':0},
-                {'stat': 'Standard deviation', 'value':0},
-                {'stat': 'Risk of Ruin', 'value':0}
-            ],
-            # style_header = {'display': 'none'}
-        )
-    )
-])'''
-
 stat_table = dash_table.DataTable(
     id='stat_table',
     columns=[
@@ -154,6 +133,7 @@ stat_table = dash_table.DataTable(
     data=[
         {'stat': 'EV', 'value': 0},
         {'stat': 'RoR', 'value': 0},
+        {'stat': 'EV (%)', 'value':0},
         {'stat': 'EV/hour', 'value':0},
         {'stat': 'Standard deviation', 'value':0},
         {'stat': 'Risk of Ruin', 'value':0}
@@ -256,6 +236,7 @@ def update_output_div(input_value, rows):
 def update_output_div(freq, personalization, rows):
     dff = pd.DataFrame(freq)
     bankroll = pd.DataFrame(personalization).iloc[0, 1]
+    round_per_hour = pd.DataFrame(personalization).iloc[2, 1]
 
     # Average bet
     rows[0]['stat'] = 'Average Bet'
@@ -267,22 +248,27 @@ def update_output_div(freq, personalization, rows):
     ev = sum(dff['freq']*dff['ev']*dff['customized'])
     rows[1]['value'] = f'${ev:.2f}'
 
+    # EV / hour
+    rows[2]['stat'] = 'Expected Value'
+    ev_hour = sum(dff['freq']*dff['ev']*dff['customized']*round_per_hour)
+    rows[2]['value'] = f'${ev_hour:.2f}'
+
     # EV %
-    rows[2]['stat'] = 'EV (%)'
+    rows[3]['stat'] = 'EV (%)'
     ev_percentage = ev / avg_bet
-    rows[2]['value'] = f'{ev_percentage*100:.2f}%'
+    rows[3]['value'] = f'{ev_percentage*100:.2f}%'
 
     # Standard deviation
-    rows[3]['stat'] = 'Standard deviation'
+    rows[4]['stat'] = 'Standard deviation'
     std = sum(dff['freq'] * 1.30 ** 2 * dff['customized'] ** 2) ** 0.5
-    rows[3]['value'] = f'${std:.2f}'
+    rows[4]['value'] = f'${std:.2f}'
 
     # RoR
-    rows[4]['stat'] = 'Risk of Ruin'
+    rows[5]['stat'] = 'Risk of Ruin'
     ror = min(
             ((1 - ev / std) / (1 + ev / std)) ** (bankroll / std), 1
             ) # if the risk f 
-    rows[4]['value'] = f'{ror*100:.2f}%'
+    rows[5]['value'] = f'{ror*100:.2f}%'
 
     return rows
 
@@ -295,7 +281,7 @@ def update_output_div(freq, personalization, rows):
 )
 def update_output_div(stat, personalization, rows):
     ev = float(pd.DataFrame(stat).iloc[1, 1].strip('$'))
-    sd = float(pd.DataFrame(stat).iloc[3, 1].strip('$'))
+    sd = float(pd.DataFrame(stat).iloc[4, 1].strip('$'))
     hours = pd.DataFrame(personalization).iloc[1, 1]
     round_per_hour = pd.DataFrame(personalization).iloc[2, 1]
 
@@ -319,7 +305,7 @@ def update_output_div(stat, personalization, rows):
 def update_output_div(personalization, stat, rows):
     dff = pd.DataFrame(stat)
     ev = float(dff.iloc[1, 1].strip('$'))
-    sd = float(dff.iloc[3, 1].strip('$'))
+    sd = float(dff.iloc[4, 1].strip('$'))
 
     dff_personalization = pd.DataFrame(personalization)
     hours = dff_personalization.iloc[1, 1]
