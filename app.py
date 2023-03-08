@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.stats import norm
 import seaborn as sns
 import plotly.express as px
-from plotly.tools import mpl_to_plotly
+import plotly.graph_objects as go
 
 app = dash.Dash(__name__,
                 external_stylesheets=[dbc.themes.MINTY])
@@ -39,7 +39,7 @@ rule = dbc.Card([
                 id='rule-check-2',
                 options={
                         'h17': 'Dealer hits S17',
-                        'european': 'No hole card (European)',
+                        'european': 'No hole card',
                         'das': 'Double after split',
                 },
                 value=['h17'],
@@ -51,7 +51,7 @@ rule = dbc.Card([
             dcc.Checklist(
                 id='rule-check-3',
                 options={
-                        'd3': 'Double with > 2 cards',
+                        'd3': 'Double > 2 cards',
                         'rsa': 'Resplit aces',
                         'dsa': 'Draw to splitted aces',
                 },
@@ -163,12 +163,7 @@ worst_table = dbc.Card([
 
 dist_graph = dcc.Graph(id='dist_graph')
 
-app.layout = dbc.Container([
-    # Stored data
-    base,
-
-    # Header
-    html.H1('SEBJ'),    
+main_page = [
     dbc.Row([
         dbc.Col(
             [
@@ -176,27 +171,39 @@ app.layout = dbc.Container([
                 html.Br(),
                 freq_table
             ],
-            width=8
+            width=7
         ),
-
-        dbc.Col(
-            [
-                dist_graph
-            ],
-            width=4
-        )
+        dbc.Col(dist_graph, width=5)
     ]),
 
-    html.Br(),
+    # html.Br(style={"line-height": 1}),
 
     dbc.Row([
         dbc.Col(personalization, width=4),
         dbc.Col(stat_table, width=4),
         dbc.Col(worst_table, width=4)
     ])
-    #html.P(base.data),
-    #html.P(id='testing'),
-    #dcc.Input(id='my-input', value='initial value', type='text') # For testing only
+]
+
+app.layout = dbc.Container([
+    # Stored data
+    base,
+
+    # Header
+    html.H1('Simple and Easy Blackjack Calculator'),
+    dbc.Tabs([
+        dbc.Tab(label='Main Page', children=main_page),
+        dbc.Tab(label='Guide', children=html.P('Guide')),
+        dbc.Tab(label='Learn More', children=[
+            dcc.Markdown(
+            '''
+            For more information, please visit our GitHub repository at [https://github.com/morrismanfung/sebjwebapp](https://github.com/morrismanfung/sebjwebapp).
+            
+            Source code of the web app can be accessed in the repository.
+            ''')
+        ])
+    ]),
+    
 ])
 
 # Update base edge
@@ -276,22 +283,74 @@ def update_output_div(freq, personalization, rows):
 @app.callback(
     Output(component_id='dist_graph', component_property='figure'),
     [Input(component_id='stat_table', component_property='data'),
-     Input(component_id='personalization_table', component_property='data')],
-    State(component_id='stat_table', component_property='data')
+     Input(component_id='personalization_table', component_property='data'),
+     Input(component_id='worst_table', component_property='data')],
 )
-def update_output_div(stat, personalization, rows):
+def update_output_div(stat, personalization, worst):
     ev = float(pd.DataFrame(stat).iloc[1, 1].strip('$'))
     sd = float(pd.DataFrame(stat).iloc[4, 1].strip('$'))
     hours = pd.DataFrame(personalization).iloc[1, 1]
     round_per_hour = pd.DataFrame(personalization).iloc[2, 1]
 
+    worst = pd.DataFrame(worst)
+
     sd = sd * (hours * round_per_hour) ** 0.5                   # Taking square root because each run is independent
-    z = np.linspace(norm.ppf(0.0001), norm.ppf(0.9999), 10000)
+    z = np.linspace(norm.ppf(0.01), norm.ppf(0.99), 10000)
     x = z * sd + ev * hours * round_per_hour
     y = norm.pdf(z)
 
-    figure = px.line(x = x, y = y)
+    z50 = np.linspace(norm.ppf(0.25), norm.ppf(0.75), 1000)
+    x50 = z50 * sd + ev * hours * round_per_hour
+    y50 = norm.pdf(z50)
 
+    dff_whole = pd.DataFrame({'x': x, 'y': y})
+    dff_50 = pd.DataFrame({'x50': x50, 'y50': y50})
+
+    figure = px.line(dff_whole, x='x', y='y',
+        title = 'Distribution of Actual Return',
+        labels={'x': 'Actual Return', 'y': 'Probability Density'})
+    
+    # figure.add_trace(go.Scatter(x=x50, y=y50, fill='tozeroy', mode='none'))
+    
+    figure.add_trace(go.Scatter(
+        x=[norm.ppf(0.01) * sd + ev * hours * round_per_hour, norm.ppf(0.01) * sd + ev * hours * round_per_hour],
+        y=[0, 0.5], 
+        line={
+            'color': 'rgb(31, 119, 180)',
+            'width': 1,
+            'dash': 'dashdot',
+        }, name=f'Worst 1%: {worst.iloc[0, 1]}'
+    ))
+
+    figure.add_trace(go.Scatter(
+        x=[norm.ppf(0.05) * sd + ev * hours * round_per_hour, norm.ppf(0.05) * sd + ev * hours * round_per_hour],
+        y=[0, 0.5], 
+        line={
+            'color': 'rgb(255, 127, 14)',
+            'width': 1,
+            'dash': 'dashdot',
+        }, name=f'Worst 5%: {worst.iloc[1, 1]}'
+    ))
+
+    figure.add_trace(go.Scatter(
+        x=[norm.ppf(0.1) * sd + ev * hours * round_per_hour, norm.ppf(0.1) * sd + ev * hours * round_per_hour],
+        y=[0, 0.5], 
+        line={
+            'color': 'rgb(44, 160, 44)',
+            'width': 1,
+            'dash': 'dashdot',
+        }, name=f'Worst 10%: {worst.iloc[2, 1]}'
+    ))
+
+    figure.add_trace(go.Scatter(
+        x=[norm.ppf(0.5) * sd + ev * hours * round_per_hour, norm.ppf(0.5) * sd + ev * hours * round_per_hour],
+        y=[0, 0.5], 
+        line={
+            'color': 'rgb(148, 103, 189)',
+            'width': 1,
+            'dash': 'dashdot',
+        }, name=f'Worst 50%: {worst.iloc[3, 1]}'
+    ))
 
     return figure
 
