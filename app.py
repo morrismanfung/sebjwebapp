@@ -26,9 +26,9 @@ rule = dbc.Card([
             dcc.Checklist(
                 id='rule-check-1',
                 options={
-                        'dd': 'Double Deck',
-                        'd10': 'Double on 10+',
-                        'd9': 'Double on 9+'
+                        'dd': ' Double Deck',
+                        'd10': ' Double on 10+',
+                        'd9': ' Double on 9+'
                 },
                 value=[],
                 labelStyle = {'display': 'block'}
@@ -39,9 +39,9 @@ rule = dbc.Card([
             dcc.Checklist(
                 id='rule-check-2',
                 options={
-                        'h17': 'Dealer hits S17',
-                        'european': 'No hole card',
-                        'das': 'Double after split',
+                        'h17': ' Dealer hits S17',
+                        'european': ' No hole card',
+                        'das': ' Double after split',
                 },
                 value=['h17'],
                 labelStyle = {'display': 'block'}
@@ -52,9 +52,9 @@ rule = dbc.Card([
             dcc.Checklist(
                 id='rule-check-3',
                 options={
-                        'd3': 'Double > 2 cards',
-                        'rsa': 'Resplit aces',
-                        'dsa': 'Draw to splitted aces',
+                        'd3': ' Double > 2 cards',
+                        'rsa': ' Resplit aces',
+                        'dsa': ' Draw to splitted aces',
                 },
                 value=[],
                 labelStyle = {'display': 'block'}
@@ -65,8 +65,8 @@ rule = dbc.Card([
             dcc.Checklist(
                 id='rule-check-4',
                 options={
-                        'late': 'Late Surrender',
-                        'early': 'Early Surrender'
+                        'late': ' Late Surrender',
+                        'early': ' Early Surrender'
                 },
                 value=[],
                 labelStyle = {'display': 'block'}
@@ -194,15 +194,34 @@ app.layout = dbc.Container([
     html.H1('Simple and Easy Blackjack Calculator'),
     dbc.Tabs([
         dbc.Tab(label='Main Page', children=main_page),
-        dbc.Tab(label='Guide', children=html.P('Guide')),
-        dbc.Tab(label='Learn More', children=[
-            dcc.Markdown(
+        dbc.Tab(label='Guide', children=dcc.Markdown(
+            '''
+            ### Overview
+
+            Welcome, advantage players! This is the first free online Blackjack bankroll managment application. If you are hesitating whether to purchase CVCX or the BJA Pro Betting Software in the early stage of your counting journey, you may want to try out this web app.
+
+            If you are already a pro in Blackjack, I will advise you to use either CVCX or the BJA Pro Betting Software. They are designed with a simulation approach and with more advanced statistics. This web app is using a theoretical approach, which results should be treated as approximations (at least in the current stage) if you are going serious in card counting.
+
+            ### How to use
+
+            1. Specify the rules of your blackjack game using the checkboxes. This will determine the the base advantage of the house.
+
+            2. Specify your own bet spread (i.e., betting strategy). Please note the players' advantage with each count is estimated roughly using the heuristic of +0.5% advantage for each unit increase in the count.
+
+            3. Specify your bankroll (i.e., the amount of money you prepare for card counting), hour (i.e., usually the amount of time for 1 trip), and the number of rounds per hour. These will be used for risk estimation.
+
+            4. Adjust your bet spread so that your expected return and risk become reasonable. Please also be reminded to use a bet spread that will not draw much attention from the casino!
+
+            ### Good luck counting!
+            '''
+        )),
+        dbc.Tab(label='Learn More', children=dcc.Markdown(
             '''
             For more information, please visit our GitHub repository at [https://github.com/morrismanfung/sebjwebapp](https://github.com/morrismanfung/sebjwebapp).
             
             Source code of the web app can be accessed in the repository.
             ''')
-        ])
+        )
     ]),
     
 ])
