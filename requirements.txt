@@ -1,0 +1,5 @@
+pandas~=1.5.*
+dash~=2.8.*
+dash-bootstrap-components
+scipy~=1.0.*
+plotly~=5.13.*
