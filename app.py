@@ -174,7 +174,10 @@ main_page = [
             ],
             width=7
         ),
-        dbc.Col(dist_graph, width=5)
+        dbc.Col(
+            dbc.Spinner(
+                children=dist_graph),
+            width=5)
     ]),
 
     # html.Br(style={"line-height": 1}),
