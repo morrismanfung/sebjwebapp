@@ -271,12 +271,12 @@ def update_output_div(freq, personalization, rows):
     rows[0]['value'] = f'${avg_bet:.2f}'
 
     # EV
-    rows[1]['stat'] = 'Expected Value'
+    rows[1]['stat'] = 'Expected Value (per round)'
     ev = sum(dff['freq']*dff['ev']*dff['customized'])
     rows[1]['value'] = f'${ev:.2f}'
 
     # EV / hour
-    rows[2]['stat'] = 'Expected Value'
+    rows[2]['stat'] = 'Expected Value (per hour)'
     ev_hour = sum(dff['freq']*dff['ev']*dff['customized']*round_per_hour)
     rows[2]['value'] = f'${ev_hour:.2f}'
 
