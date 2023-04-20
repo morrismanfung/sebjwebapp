@@ -175,7 +175,10 @@ main_page = [
             ],
             width=7
         ),
-        dbc.Col(dist_graph, width=5)
+        dbc.Col(
+            dbc.Spinner(
+                children=dist_graph),
+            width=5)
     ]),
 
     # html.Br(style={"line-height": 1}),
@@ -218,9 +221,9 @@ app.layout = dbc.Container([
         )),
         dbc.Tab(label='Learn More', children=dcc.Markdown(
             '''
-            For more information, please visit our GitHub repository at [https://github.com/morrismanfung/sebjwebapp](https://github.com/morrismanfung/sebjwebapp).
+            For more information, please contact me on Reddit at [r/lohessabb](https://www.reddit.com/user/lohessabb).
             
-            Source code of the web app can be accessed in the repository.
+            Source code is available upon request.
             ''')
         )
     ]),

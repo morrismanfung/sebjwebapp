@@ -24,6 +24,16 @@ The application does not only return the standard deviation and distribution cha
 
 Reference of the statsitics used can be found in our [proposal](proposal.md).
 
+## Usage
+
+1. Specify the rules of your blackjack game using the checkboxes. This will determine the the base advantage of the house.
+
+2. Specify your own bet spread (i.e., betting strategy). Please note the players' advantage with each count is estimated roughly using the heuristic of +0.5% advantage for each unit increase in the count.
+
+3. Specify your bankroll (i.e., the amount of money you prepare for card counting), hour (i.e., usually the amount of time for 1 trip), and the number of rounds per hour. These will be used for risk estimation.
+
+4. Adjust your bet spread so that your expected return and risk become reasonable. Please also be reminded to use a bet spread that will not draw much attention from the casino!
+
 ## License
 
 The software is licensed under the [MIT license](LICENSE).
