@@ -137,6 +137,7 @@ stat_table = dash_table.DataTable(
         {'stat': 'EV (%)', 'value':0},
         {'stat': 'EV/hour', 'value':0},
         {'stat': 'Standard deviation', 'value':0},
+        {'stat': 'Risk of Ruin (per hour)', 'value':0},
         {'stat': 'Risk of Ruin', 'value':0}
     ],
     # style_header = {'display': 'none'}
@@ -285,17 +286,22 @@ def update_output_div(freq, personalization, rows):
     ev_percentage = ev / avg_bet
     rows[3]['value'] = f'{ev_percentage*100:.2f}%'
 
-    # Standard deviation
-    rows[4]['stat'] = 'Standard deviation'
-    std = sum(dff['freq'] * 1.30 ** 2 * dff['customized'] ** 2) ** 0.5
+    # Standard deviation / round
+    rows[4]['stat'] = 'Standard deviation (per round)'
+    std = sum(dff['freq'] * 1.16 ** 2 * dff['customized'] ** 2) ** 0.5
     rows[4]['value'] = f'${std:.2f}'
 
+    # Standard deviation / hour
+    rows[5]['stat'] = 'Standard deviation (per hour)'
+    std_hour = std * (round_per_hour ** 0.5)
+    rows[5]['value'] = f'${std_hour:.2f}'
+
     # RoR
-    rows[5]['stat'] = 'Risk of Ruin'
+    rows[6]['stat'] = 'Risk of Ruin'
     ror = min(
             ((1 - ev / std) / (1 + ev / std)) ** (bankroll / std), 1
             ) # if the risk f 
-    rows[5]['value'] = f'{ror*100:.2f}%'
+    rows[6]['value'] = f'{ror*100:.2f}%'
 
     return rows
 
